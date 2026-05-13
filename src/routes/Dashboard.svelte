@@ -66,11 +66,11 @@
       <div class="card section">
         <div class="section-header">
           <h2 class="section-title">Alertas críticos</h2>
-          <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('alertas')}>Ver todos →</button>
+          <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('alertas')}><span style="display:inline-flex;align-items:center;gap:4px">Ver todos {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M3 8h10M9 4l4 4-4 4"/></svg>'}</span></button>
         </div>
         {#if data.alertasCriticos.length === 0 && data.alertasEmAtencao.length === 0}
           <div class="empty-state" style="padding:32px">
-            <div class="icon">✓</div>
+            <div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</div>
             <p>Tudo em dia!</p>
           </div>
         {:else}
@@ -102,10 +102,10 @@
       <div class="card section">
         <div class="section-header">
           <h2 class="section-title">Gastos por veículo</h2>
-          <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('financeiro')}>Financeiro →</button>
+          <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('financeiro')}><span style="display:inline-flex;align-items:center;gap:4px">Financeiro {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M3 8h10M9 4l4 4-4 4"/></svg>'}</span></button>
         </div>
         {#if data.gastosPorVeiculo.length === 0}
-          <div class="empty-state" style="padding:32px"><div class="icon">📊</div><p>Sem dados</p></div>
+          <div class="empty-state" style="padding:32px"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:32px;height:32px"><path d="M2 13h12"/><rect x="2.5" y="8" width="3" height="5" rx=".5" fill="currentColor" stroke="none"/><rect x="6.5" y="5" width="3" height="8" rx=".5" fill="currentColor" stroke="none"/><rect x="10.5" y="2" width="3" height="11" rx=".5" fill="currentColor" stroke="none"/></svg>'}</div><p>Sem dados</p></div>
         {:else}
           {@const maxVal = Math.max(...data.gastosPorVeiculo.map((v) => v.total_manutencao + v.total_combustivel), 1)}
           <div class="veiculos-gastos">
@@ -155,10 +155,10 @@
     <div class="card section" style="margin-top:16px">
       <div class="section-header">
         <h2 class="section-title">Serviços recentes</h2>
-        <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('servicos')}>Ver todos →</button>
+        <button class="btn btn-ghost" style="font-size:12px" on:click={() => currentRoute.set('servicos')}><span style="display:inline-flex;align-items:center;gap:4px">Ver todos {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M3 8h10M9 4l4 4-4 4"/></svg>'}</span></button>
       </div>
       {#if data.ultimosServicos.length === 0}
-        <div class="empty-state" style="padding:32px"><div class="icon">🔧</div><p>Nenhum serviço registrado</p></div>
+        <div class="empty-state" style="padding:32px"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M10 2a4 4 0 0 1 .92 4.42L14.5 11 13 12.5 8.58 8.92A4 4 0 0 1 4.5 4.5a4 4 0 0 1 .5-2l2.5 2.5L9 3.5 6.5 1A4 4 0 0 1 10 2z"/></svg>'}</div><p>Nenhum serviço registrado</p></div>
       {:else}
         <div class="servicos-lista">
           {#each data.ultimosServicos as s, i}

@@ -113,7 +113,7 @@
       <div class="card secao">
         <h2 class="secao-titulo">Por tipo de serviço</h2>
         {#if dados.porTipo.length === 0}
-          <div class="empty-state" style="padding:24px"><div class="icon">📊</div><p>Sem dados</p></div>
+          <div class="empty-state" style="padding:24px"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:32px;height:32px"><path d="M2 13h12"/><rect x="2.5" y="8" width="3" height="5" rx=".5" fill="currentColor" stroke="none"/><rect x="6.5" y="5" width="3" height="8" rx=".5" fill="currentColor" stroke="none"/><rect x="10.5" y="2" width="3" height="11" rx=".5" fill="currentColor" stroke="none"/></svg>'}</div><p>Sem dados</p></div>
         {:else}
           {@const maxTipo = Math.max(...dados.porTipo.map((t) => t.total), 1)}
           <div class="tipos-lista">
@@ -140,7 +140,7 @@
       <div class="card secao">
         <h2 class="secao-titulo">Histórico mensal</h2>
         {#if dados.porMes.length === 0}
-          <div class="empty-state" style="padding:24px"><div class="icon">📅</div><p>Sem dados</p></div>
+          <div class="empty-state" style="padding:24px"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><rect x="2" y="3.5" width="12" height="11" rx="1.5"/><path d="M2 7.5h12M5.5 3.5V1.5M10.5 3.5V1.5"/></svg>'}</div><p>Sem dados</p></div>
         {:else}
           <div class="grafico-barras">
             {#each dados.porMes as m}

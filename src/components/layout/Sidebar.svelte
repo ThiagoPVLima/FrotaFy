@@ -33,7 +33,7 @@
   let logLines: string[] = []
 
   async function iniciarAtualizacao() {
-    if (!await showConfirm('Atualizar o Car Manager? O sistema será reiniciado automaticamente.')) return
+    if (!await showConfirm('Atualizar o FrotaFy? O sistema será reiniciado automaticamente.')) return
     atualizando = true; etapa = 'Iniciando...'; erro = ''
     const res = await fetch('/api/atualizar', { method: 'POST' })
     const json = await res.json()
@@ -62,14 +62,13 @@
   <div class="brand">
     <div class="brand-icon">
       <svg viewBox="0 0 24 24" fill="none">
-        <path d="M3 17h18M4.5 17L6 10.5h12l1.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="7" cy="19.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="17" cy="19.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M8.5 10.5L9.5 7h5l1 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 4h11M6 12h7M6 4v16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M11 16l6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
+        <circle cx="17" cy="12" r="1.5" fill="currentColor"/>
       </svg>
     </div>
     <div class="brand-text">
-      <div class="brand-name">Car Manager</div>
+      <div class="brand-name">FrotaFy</div>
       <div class="brand-sub">Manutenção automotiva</div>
     </div>
   </div>
@@ -94,9 +93,9 @@
       {#if temAtualizacao}<span class="update-dot"></span>{/if}
     </button>
     <button class="btn-fechar" on:click={async () => {
-      if (!await showConfirm('Encerrar o Car Manager?')) return
+      if (!await showConfirm('Encerrar o FrotaFy?')) return
       await post('/shutdown', {})
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0d0d0d;font-family:sans-serif;color:#606060;flex-direction:column;gap:12px"><p style="font-size:18px;font-weight:600;color:#f0f0f0">Car Manager encerrado</p><p>Pode fechar esta aba.</p></div>'
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0d0d0d;font-family:sans-serif;color:#606060;flex-direction:column;gap:12px"><p style="font-size:18px;font-weight:600;color:#f0f0f0">FrotaFy encerrado</p><p>Pode fechar esta aba.</p></div>'
     }}>
       <svg viewBox="0 0 16 16" class="close-icon"><path d="M3 3l10 10M13 3L3 13"/></svg>
       Fechar sistema
@@ -108,7 +107,7 @@
 {#if atualizando}
   <div class="update-overlay">
     <div class="update-box">
-      <div class="update-title">Atualizando Car Manager</div>
+      <div class="update-title">Atualizando FrotaFy</div>
       {#if erro}
         <div class="update-erro">{erro}</div>
         {#if logLines.length > 0}

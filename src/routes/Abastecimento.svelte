@@ -114,7 +114,7 @@
   {#if loading}
     <div class="loading">Carregando...</div>
   {:else if filtrados.length === 0}
-    <div class="empty-state"><div class="icon">⛽</div><p>Nenhum abastecimento registrado</p>
+    <div class="empty-state"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M3 14V4a1 1 0 011-1h5a1 1 0 011 1v10M3 14h7M10 6h2a1 1 0 011 1v4a1 1 0 001 1"/><path d="M13 7l1.5-1.5"/></svg>'}</div><p>Nenhum abastecimento registrado</p>
       <button class="btn btn-primary" style="margin-top:16px" on:click={() => abrirModal()}>Registrar primeiro</button>
     </div>
   {:else}
@@ -131,7 +131,7 @@
       {#each filtrados as a, i}
         <div class="abast-row">
           <div class="comb-badge" style="background:{corCombustivel(a.combustivel)}22;color:{corCombustivel(a.combustivel)}">
-            ⛽
+            <span class="comb-icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14V4a1 1 0 011-1h5a1 1 0 011 1v10M3 14h7M10 6h2a1 1 0 011 1v4a1 1 0 001 1"/><path d="M13 7l1.5-1.5"/></svg>'}</span>
           </div>
           <div class="abast-info">
             <div class="abast-titulo">{a.veiculo_apelido}</div>
@@ -141,13 +141,13 @@
               <span class="mono" style="font-size:10px">{formatBRL(a.valor_por_litro)}/L</span>
               {#if a.km_no_momento}<span>{formatKm(a.km_no_momento)}</span>{/if}
               <span>{formatData(a.data)}</span>
-              {#if a.posto}<span>📍 {a.posto}</span>{/if}
+              {#if a.posto}<span><span style="display:inline-flex;align-items:center;width:12px;height:12px;vertical-align:middle">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14.5S3 10.5 3 6.5a5 5 0 1 1 10 0c0 4-5 8-5 8z"/><circle cx="8" cy="6.5" r="1.5"/></svg>'}</span> {a.posto}</span>{/if}
             </div>
           </div>
           <div class="abast-valor mono">{formatBRL(a.valor_total)}</div>
           <div class="abast-acoes">
-            <button class="btn btn-ghost" style="font-size:13px" on:click={() => abrirModal(a)}>✎</button>
-            <button class="btn btn-ghost" style="font-size:11px;color:var(--red)" on:click={() => deletar(a.id)}>✕</button>
+            <button class="btn btn-ghost" style="padding:6px 8px" on:click={() => abrirModal(a)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span></button>
+            <button class="btn btn-ghost" style="padding:6px 8px;color:var(--red)" on:click={() => deletar(a.id)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
           </div>
         </div>
         {#if i < filtrados.length - 1}<div class="row-divider" />{/if}
@@ -248,8 +248,14 @@
   .comb-badge {
     width: 36px; height: 36px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 17px; flex-shrink: 0;
+    flex-shrink: 0;
   }
+
+  .comb-icon { display: inline-flex; align-items: center; width: 18px; height: 18px; }
+  .comb-icon :global(svg) { width: 18px; height: 18px; }
+
+  .btn-svg { width: 14px; height: 14px; display: inline-flex; align-items: center; }
+  .btn-svg :global(svg) { width: 14px; height: 14px; }
 
   .abast-info { flex: 1; min-width: 0; }
   .abast-titulo { font-size: 13px; font-weight: 500; color: var(--text); }

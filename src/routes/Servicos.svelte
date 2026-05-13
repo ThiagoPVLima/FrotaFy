@@ -126,7 +126,7 @@
     <div class="loading">Carregando...</div>
   {:else if servicosFiltrados.length === 0}
     <div class="empty-state">
-      <div class="icon">🔧</div>
+      <div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M10 2a4 4 0 0 1 .92 4.42L14.5 11 13 12.5 8.58 8.92A4 4 0 0 1 4.5 4.5a4 4 0 0 1 .5-2l2.5 2.5L9 3.5 6.5 1A4 4 0 0 1 10 2z"/></svg>'}</div>
       <p>Nenhum serviço registrado</p>
       <button class="btn btn-primary" style="margin-top:16px" on:click={() => abrirModal()}>Registrar primeiro serviço</button>
     </div>
@@ -140,7 +140,7 @@
     <div class="servicos-lista card">
       {#each servicosFiltrados as s, i}
         <div class="servico-row">
-          <div class="tipo-icon" style="background:{s.tipo_cor || '#290a42'}22;color:{s.tipo_cor || '#290a42'}">{s.tipo_icone || '🔧'}</div>
+          <div class="tipo-icon" style="background:{s.tipo_cor || '#1a6aff'}22;color:{s.tipo_cor || '#1a6aff'}">{s.tipo_icone || '🔧'}</div>
           <div class="servico-info">
             <div class="servico-titulo">{s.tipo_nome || s.tipo_servico_custom || 'Serviço livre'}</div>
             <div class="servico-meta">
@@ -148,7 +148,7 @@
               <span>{formatKm(s.km_no_momento)}</span>
               <span>{formatData(s.data)}</span>
               {#if s.pecas?.length > 0}<span>{s.pecas.length} peça{s.pecas.length !== 1 ? 's' : ''}</span>{/if}
-              {#if s.oleo_viscosidade}<span>🛢 {s.oleo_viscosidade}</span>{/if}
+              {#if s.oleo_viscosidade}<span><span style="display:inline-flex;align-items:center;width:13px;height:13px;vertical-align:middle">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="10" rx="5" ry="4"/><path d="M6 10c0-1 .9-2 2-2s2 .9 2 2"/><path d="M8 2v4"/><path d="M6 4l2-2 2 2"/></svg>'}</span> {s.oleo_viscosidade}</span>{/if}
             </div>
             {#if s.observacoes}
               <div class="servico-obs">{s.observacoes}</div>
@@ -161,8 +161,8 @@
             {/if}
           </div>
           <div class="servico-acoes">
-            <button class="btn btn-ghost" style="font-size:13px" on:click={() => abrirModal(s)}>✎</button>
-            <button class="btn btn-ghost" style="font-size:11px;color:var(--red)" on:click={() => deletar(s.id)}>✕</button>
+            <button class="btn btn-ghost" style="padding:6px 8px" on:click={() => abrirModal(s)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span></button>
+            <button class="btn btn-ghost" style="padding:6px 8px;color:var(--red)" on:click={() => deletar(s.id)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
           </div>
         </div>
         {#if i < servicosFiltrados.length - 1}<div class="row-divider" />{/if}
@@ -260,7 +260,7 @@
                 <input class="input" placeholder="Marca" bind:value={peca.marca} style="flex:1" />
                 <input class="input" placeholder="Qtd" bind:value={peca.quantidade} inputmode="numeric" style="flex:0.5;font-family:var(--font-mono)" />
                 <input class="input" placeholder="R$" bind:value={peca.valor_unitario} inputmode="decimal" style="flex:1;font-family:var(--font-mono)" />
-                <button class="btn btn-ghost" style="color:var(--red);padding:6px" on:click={() => form.pecas = form.pecas.filter((_, i) => i !== idx)}>✕</button>
+                <button class="btn btn-ghost" style="color:var(--red);padding:6px" on:click={() => form.pecas = form.pecas.filter((_, i) => i !== idx)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
               </div>
             {/each}
             <button class="btn btn-secondary" style="width:100%;margin-top:6px;justify-content:center" on:click={() => form.pecas = [...form.pecas, novaPeca()]}>
@@ -347,4 +347,7 @@
   .pecas-total { font-size: 12px; color: var(--text-2); text-align: right; margin-top: 8px; }
 
   .mono { font-family: var(--font-mono); }
+
+  .btn-svg { width: 14px; height: 14px; display: inline-flex; align-items: center; }
+  .btn-svg :global(svg) { width: 14px; height: 14px; }
 </style>

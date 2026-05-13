@@ -87,7 +87,7 @@ export const COMBUSTIVEIS = ['gasolina', 'etanol', 'flex', 'diesel', 'gnv', 'el√
 export const CORES_VEICULO = [
   '#1c1917', '#374151', '#6b7280', '#f9fafb',
   '#dc2626', '#2563eb', '#16a34a', '#d97706',
-  '#290a42', '#0e7490', '#7c3aed', '#db2777',
+  '#1a6aff', '#0e7490', '#7c3aed', '#db2777',
 ]
 
 export const STATUS_ALERTA: Record<string, { label: string; cor: string; bg: string }> = {

@@ -4,7 +4,13 @@
 </script>
 
 <div class="toast toast-{type}">
-  <span class="icon">{type === 'success' ? '✓' : '✕'}</span>
+  <span class="icon">
+    {#if type === 'success'}
+      {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}
+    {:else}
+      {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}
+    {/if}
+  </span>
   {message}
 </div>
 
@@ -30,7 +36,7 @@
     border-color: rgba(239,68,68,.3);
   }
 
-  .icon { font-weight: 700; font-size: 12px; }
+  .icon { display: inline-flex; align-items: center; width: 14px; height: 14px; flex-shrink: 0; }
 
   @keyframes toastIn {
     from { opacity: 0; transform: translateX(-50%) translateY(8px) }

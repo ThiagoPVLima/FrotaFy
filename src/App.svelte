@@ -81,12 +81,12 @@
     --text-3:      #606060;
     --text-4:      #404040;
 
-    /* Accent roxo açaí */
-    --accent:      #290a42;
-    --accent-2:    #3d1063;
-    --accent-3:    #52168a;
-    --accent-fg:   #e8d5f5;
-    --accent-glow: rgba(41, 10, 66, 0.4);
+    /* Accent azul FrotaFy */
+    --accent:      #071845;
+    --accent-2:    #0c2580;
+    --accent-3:    #1a6aff;
+    --accent-fg:   #c8dfff;
+    --accent-glow: rgba(26, 106, 255, 0.35);
 
     /* Semânticas */
     --green:       #22c55e;
@@ -145,7 +145,7 @@
     border: 1px solid var(--accent-2);
   }
   :global(.btn-primary:hover) {
-    background: #6520b8;
+    background: #2a7aff;
     box-shadow: 0 0 16px var(--accent-glow);
   }
 
@@ -245,7 +245,7 @@
   :global(.empty-state) {
     text-align: center; padding: 64px 24px; color: var(--text-3);
   }
-  :global(.empty-state .icon) { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+  :global(.empty-state .icon) { font-size: 36px; margin-bottom: 12px; opacity: 0.3; display: flex; align-items: center; justify-content: center; }
   :global(.empty-state p) { font-size: 14px; color: var(--text-3); }
 
   /* ── Modal ── */

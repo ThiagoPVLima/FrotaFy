@@ -21,7 +21,7 @@
 
 {#if visivel}
   <div class="toast-alertas">
-    <div class="alerta-icon">⚠</div>
+    <div class="alerta-icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2L2 13h12L8 2z"/><path d="M8 6v4M8 11.5v.5"/></svg>'}</div>
     <div class="alerta-corpo">
       <div class="alerta-titulo">{criticos.length} alerta{criticos.length !== 1 ? 's' : ''} vencido{criticos.length !== 1 ? 's' : ''}</div>
       <div class="alerta-lista">
@@ -36,9 +36,9 @@
           <div class="alerta-mais">+{criticos.length - 4} outros</div>
         {/if}
       </div>
-      <button class="alerta-btn" on:click={verAlertas}>Ver todos os alertas →</button>
+      <button class="alerta-btn" on:click={verAlertas}>Ver todos os alertas <span class="alerta-arrow">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>'}</span></button>
     </div>
-    <button class="alerta-fechar" on:click={fechar}>✕</button>
+    <button class="alerta-fechar" on:click={fechar}>{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</button>
   </div>
 {/if}
 
@@ -52,7 +52,8 @@
     z-index: 500; animation: slideIn 0.22s ease;
   }
   @keyframes slideIn { from { opacity: 0; transform: translateX(16px) } to { opacity: 1; transform: translateX(0) } }
-  .alerta-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; color: var(--red); }
+  .alerta-icon { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; color: var(--red); display: flex; align-items: center; }
+  .alerta-icon :global(svg) { width: 18px; height: 18px; }
   .alerta-corpo { flex: 1; min-width: 0; }
   .alerta-titulo { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
   .alerta-lista { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
@@ -62,6 +63,10 @@
   .alerta-tipo { color: var(--text-3); }
   .alerta-mais { font-size: 11px; color: var(--text-3); }
   .alerta-btn { font-size: 12px; font-weight: 600; color: var(--red); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px; font-family: var(--font); }
-  .alerta-fechar { width: 20px; height: 20px; border-radius: 50%; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.1s; }
+  .alerta-fechar { width: 20px; height: 20px; border-radius: 50%; background: none; border: none; cursor: pointer; color: var(--text-3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.1s; }
+  .alerta-fechar :global(svg) { width: 12px; height: 12px; }
+  .alerta-btn { display: inline-flex; align-items: center; gap: 4px; }
+  .alerta-arrow { display: inline-flex; align-items: center; width: 12px; height: 12px; }
+  .alerta-arrow :global(svg) { width: 12px; height: 12px; }
   .alerta-fechar:hover { background: var(--red-bg); color: var(--red); }
 </style>

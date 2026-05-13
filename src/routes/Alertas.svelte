@@ -119,7 +119,7 @@
   {#if loading}
     <div class="loading">Carregando...</div>
   {:else if alertasFiltrados.length === 0}
-    <div class="empty-state"><div class="icon">✓</div><p>Nenhum alerta encontrado</p></div>
+    <div class="empty-state"><div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</div><p>Nenhum alerta encontrado</p></div>
   {:else}
     <div class="alertas-grid">
       {#each alertasFiltrados as a}
@@ -175,7 +175,7 @@
             <button class="btn btn-primary" style="font-size:11px;padding:5px 12px" on:click={() => currentRoute.set('servicos')}>
               Registrar serviço
             </button>
-            <button class="btn btn-ghost" style="font-size:11px;padding:5px 8px" on:click={() => abrirModal(a)}>✎ Editar</button>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 8px" on:click={() => abrirModal(a)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span> Editar</button>
             <button class="btn btn-ghost" style="font-size:11px;padding:5px 8px;color:var(--red)" on:click={() => deletar(a.id)}>Remover</button>
           </div>
         </div>
@@ -285,4 +285,7 @@
   .alerta-footer { display: flex; gap: 4px; padding-top: 4px; border-top: 1px solid var(--border); }
 
   .red { color: var(--red) !important; }
+
+  .btn-svg { width: 13px; height: 13px; display: inline-flex; align-items: center; }
+  .btn-svg :global(svg) { width: 13px; height: 13px; }
 </style>

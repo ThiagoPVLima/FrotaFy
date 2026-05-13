@@ -139,7 +139,7 @@
         <div class="sugestao-label">Pastas detectadas:</div>
         {#each pastasCloud as p}
           <button class="sugestao-btn" on:click={() => cfgBackup = { ...cfgBackup, pastaBackup: p.pastaBackup }}>
-            <span>☁</span> {p.nome} — {p.pastaBackup}
+            <span class="cloud-icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11a3 3 0 0 1-.5-6 4 4 0 0 1 8 0 2.5 2.5 0 0 1 .5 5H3.5z"/></svg>'}</span> {p.nome} — {p.pastaBackup}
           </button>
         {/each}
       </div>
@@ -166,10 +166,10 @@
         {salvandoBackup ? 'Salvando...' : 'Salvar configuração'}
       </button>
       <button class="btn btn-secondary" on:click={fazerBackupAgora} disabled={fazendoBackup}>
-        {fazendoBackup ? 'Fazendo backup...' : '⟳ Fazer backup agora'}
+        {#if fazendoBackup}Fazendo backup...{:else}<span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg>'}</span> Fazer backup agora{/if}
       </button>
       <button class="btn btn-secondary" on:click={baixarDb}>
-        ↓ Baixar banco (.db)
+        <span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>'}</span> Baixar banco (.db)
       </button>
     </div>
 
@@ -196,20 +196,20 @@
       </div>
     {:else if gdriveStatus.conectado}
       <div class="gdrive-conectado">
-        <span class="backup-ok">✓</span>
+        <span class="backup-ok">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</span>
         Conectado como <strong>{gdriveStatus.email || 'conta Google'}</strong>
       </div>
       <div class="backup-row">
         <div class="ultimo-backup">
           {#if gdriveStatus.ultimoBackup}
-            <span class="backup-ok">✓</span> Último: {new Date(gdriveStatus.ultimoBackup).toLocaleString('pt-BR')}
+            <span class="backup-ok">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</span> Último: {new Date(gdriveStatus.ultimoBackup).toLocaleString('pt-BR')}
           {:else}
             Nenhum backup realizado ainda
           {/if}
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0">
           <button class="btn btn-secondary" on:click={gdriveBackupAgora} disabled={gdriveBackupando}>
-            {gdriveBackupando ? 'Enviando...' : '↑ Backup agora'}
+            {#if gdriveBackupando}Enviando...{:else}<span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10V2M5 5l3-3 3 3M2 13h12"/></svg>'}</span> Backup agora{/if}
           </button>
           <button class="btn btn-ghost" on:click={gdriveDesconectar} disabled={gdriveDesconectando}>
             {gdriveDesconectando ? '...' : 'Desconectar'}
@@ -242,8 +242,8 @@
           <div class="tipo-icon" style="background:{t.cor}22;color:{t.cor}">{t.icone}</div>
           <div class="tipo-nome">{t.nome}</div>
           <div class="tipo-acoes">
-            <button class="btn btn-ghost" style="font-size:12px;padding:4px 8px" on:click={() => abrirModalTipo(t)}>✎</button>
-            <button class="btn btn-ghost" style="font-size:11px;color:var(--red);padding:4px 8px" on:click={() => deletarTipo(t.id)}>✕</button>
+            <button class="btn btn-ghost" style="padding:4px 8px" on:click={() => abrirModalTipo(t)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span></button>
+            <button class="btn btn-ghost" style="color:var(--red);padding:4px 8px" on:click={() => deletarTipo(t.id)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
           </div>
         </div>
       {/each}
@@ -289,9 +289,9 @@
       <div class="form-group">
         <label class="label">Cor</label>
         <div class="cores-row">
-          {#each ['#f59e0b','#3b82f6','#6366f1','#8b5cf6','#10b981','#14b8a6','#6b7280','#290a42','#ef4444','#f97316','#64748b','#16a34a'] as cor}
+          {#each ['#f59e0b','#3b82f6','#6366f1','#8b5cf6','#10b981','#14b8a6','#6b7280','#1a6aff','#ef4444','#f97316','#64748b','#16a34a'] as cor}
             <button class="cor-btn-sm" class:selected={formTipo.cor === cor} style="background:{cor}" on:click={() => formTipo.cor = cor}>
-              {#if formTipo.cor === cor}<span style="color:white;font-size:9px;font-weight:700">✓</span>{/if}
+              {#if formTipo.cor === cor}<span style="color:white;display:inline-flex;align-items:center;width:9px;height:9px">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</span>{/if}
             </button>
           {/each}
         </div>
@@ -416,4 +416,16 @@
   .tipo-icon-preview { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
   .mono { font-family: var(--font-mono); }
+
+  .cloud-icon { display: inline-flex; align-items: center; width: 14px; height: 14px; }
+  .cloud-icon :global(svg) { width: 14px; height: 14px; }
+
+  .btn-icon-wrap { display: inline-flex; align-items: center; width: 14px; height: 14px; }
+  .btn-icon-wrap :global(svg) { width: 14px; height: 14px; }
+
+  .btn-svg { width: 14px; height: 14px; display: inline-flex; align-items: center; }
+  .btn-svg :global(svg) { width: 14px; height: 14px; }
+
+  .backup-ok { display: inline-flex; align-items: center; color: var(--green); width: 14px; height: 14px; }
+  .backup-ok :global(svg) { width: 14px; height: 14px; }
 </style>

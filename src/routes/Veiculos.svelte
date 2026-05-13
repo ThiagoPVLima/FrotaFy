@@ -8,7 +8,7 @@
   let modalKm = false
   let editando: any = null
   let kmVeiculo: any = null
-  let form = { apelido: '', placa: '', marca: '', modelo: '', ano: '', cor: '#290a42', combustivel: 'flex', km_atual: '', observacoes: '' }
+  let form = { apelido: '', placa: '', marca: '', modelo: '', ano: '', cor: '#1a6aff', combustivel: 'flex', km_atual: '', observacoes: '' }
   let formKm = { km: '', data: new Date().toISOString().slice(0, 10) }
   let modalDetalhe = false
   let veiculoDetalhe: any = null
@@ -30,9 +30,9 @@
     editando = v || null
     form = v ? {
       apelido: v.apelido, placa: v.placa || '', marca: v.marca, modelo: v.modelo,
-      ano: v.ano ? String(v.ano) : '', cor: v.cor || '#290a42',
+      ano: v.ano ? String(v.ano) : '', cor: v.cor || '#1a6aff',
       combustivel: v.combustivel || 'flex', km_atual: '', observacoes: v.observacoes || ''
-    } : { apelido: '', placa: '', marca: '', modelo: '', ano: '', cor: '#290a42', combustivel: 'flex', km_atual: '', observacoes: '' }
+    } : { apelido: '', placa: '', marca: '', modelo: '', ano: '', cor: '#1a6aff', combustivel: 'flex', km_atual: '', observacoes: '' }
     modal = true
   }
 
@@ -108,7 +108,7 @@
     <div class="loading">Carregando...</div>
   {:else if ativos.length === 0 && !loading}
     <div class="empty-state">
-      <div class="icon">🚗</div>
+      <div class="icon">{@html '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M3 17h18M4.5 17L6 10.5h12l1.5 6.5"/><circle cx="7" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/><path d="M8.5 10.5L9.5 7h5l1 3.5"/></svg>'}</div>
       <p>Nenhum veículo cadastrado ainda</p>
       <button class="btn btn-primary" style="margin-top:16px" on:click={() => abrirModal()}>Cadastrar primeiro veículo</button>
     </div>
@@ -116,17 +116,17 @@
     <div class="veiculos-grid">
       {#each ativos as v}
         <div class="veiculo-card card" role="button" tabindex="0" on:click={() => abrirDetalhe(v)} on:keydown={e => e.key === 'Enter' && abrirDetalhe(v)}>
-          <div class="veiculo-cor" style="background:{v.cor || '#290a42'}"></div>
+          <div class="veiculo-cor" style="background:{v.cor || '#1a6aff'}"></div>
           <div class="veiculo-body">
             <div class="veiculo-top">
-              <div class="veiculo-avatar" style="background:{v.cor || '#290a42'}22; color:{v.cor || '#290a42'}">
+              <div class="veiculo-avatar" style="background:{v.cor || '#1a6aff'}22; color:{v.cor || '#1a6aff'}">
                 {initials(v.apelido)}
               </div>
               <div class="veiculo-info">
                 <div class="veiculo-nome">{v.apelido}</div>
                 <div class="veiculo-sub">{v.marca} {v.modelo}{v.ano ? ` · ${v.ano}` : ''}</div>
               </div>
-              <button class="btn btn-ghost" style="padding:4px 8px;font-size:13px" on:click|stopPropagation={() => abrirModal(v)}>✎</button>
+              <button class="btn btn-ghost" style="padding:4px 8px" on:click|stopPropagation={() => abrirModal(v)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span></button>
             </div>
             <div class="veiculo-stats">
               <div class="stat">
@@ -185,7 +185,7 @@
   <div class="modal-overlay" on:click|self={() => modalDetalhe = false}>
     <div class="modal" style="max-width:560px">
       <div class="detalhe-header">
-        <div class="detalhe-avatar" style="background:{veiculoDetalhe.cor || '#290a42'}">
+        <div class="detalhe-avatar" style="background:{veiculoDetalhe.cor || '#1a6aff'}">
           {initials(veiculoDetalhe.apelido)}
         </div>
         <div class="detalhe-info">
@@ -193,7 +193,7 @@
           <div class="detalhe-sub">{veiculoDetalhe.marca} {veiculoDetalhe.modelo}{veiculoDetalhe.ano ? ` · ${veiculoDetalhe.ano}` : ''}</div>
           {#if veiculoDetalhe.placa}<span class="placa">{veiculoDetalhe.placa}</span>{/if}
         </div>
-        <button class="btn btn-secondary" on:click={() => { modalDetalhe = false; abrirModal(veiculoDetalhe) }}>✎ Editar</button>
+        <button class="btn btn-secondary" on:click={() => { modalDetalhe = false; abrirModal(veiculoDetalhe) }}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span> Editar</button>
       </div>
 
       <div class="detalhe-stats">
@@ -295,7 +295,7 @@
           {#each CORES_VEICULO as cor}
             <button class="cor-btn" class:selected={form.cor === cor}
               style="background:{cor}" on:click={() => form.cor = cor}>
-              {#if form.cor === cor}<span style="color:white;font-size:12px">✓</span>{/if}
+              {#if form.cor === cor}<span style="color:white;display:inline-flex;align-items:center;width:10px;height:10px">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5 7-7"/></svg>'}</span>{/if}
             </button>
           {/each}
         </div>
@@ -465,4 +465,7 @@
   .cor-btn.selected { border-color: var(--text-2); transform: scale(1.1); }
 
   .mono { font-family: var(--font-mono); }
+
+  .btn-svg { width: 14px; height: 14px; display: inline-flex; align-items: center; }
+  .btn-svg :global(svg) { width: 14px; height: 14px; }
 </style>
