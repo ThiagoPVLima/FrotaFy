@@ -1,0 +1,10 @@
+.claude/
+node_modules/
+dist/
+*.db
+*.db-journal
+frotafy.log
+backup-config.json
+_restart.cjs
+credentials.json
+google-token.json
