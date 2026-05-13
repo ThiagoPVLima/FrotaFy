@@ -6,7 +6,7 @@ $desktop = [Environment]::GetFolderPath('Desktop')
 
 $vbsPath = Join-Path $ProjectDir "iniciar.vbs"
 $batPath = Join-Path $ProjectDir "iniciar.bat"
-$icoPath = Join-Path $ProjectDir "logo.ico"
+$icoPath = Join-Path $ProjectDir "public\logo.ico"
 $lnkPath = Join-Path $desktop   "FrotaFy.lnk"
 
 try {
