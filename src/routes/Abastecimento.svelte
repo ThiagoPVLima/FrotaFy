@@ -27,7 +27,24 @@
 
   onMount(load)
 
-  $: filtrados = filtroVeiculo ? abastecimentos.filter(a => String(a.veiculo_id) === filtroVeiculo) : abastecimentos
+  let filtroPeriodo = ''
+  let pagina = 0
+  const POR_PAGINA = 20
+
+  $: filtrados = (() => {
+    let lista = filtroVeiculo ? abastecimentos.filter(a => String(a.veiculo_id) === filtroVeiculo) : abastecimentos
+    if (filtroPeriodo) {
+      const corte = new Date()
+      corte.setDate(corte.getDate() - Number(filtroPeriodo))
+      const cutoff = corte.toISOString().slice(0, 10)
+      lista = lista.filter(a => a.data >= cutoff)
+    }
+    return lista
+  })()
+
+  $: { filtroVeiculo; filtroPeriodo; pagina = 0 }
+  $: totalPaginas = Math.ceil(filtrados.length / POR_PAGINA)
+  $: filtradosPagina = filtrados.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA)
   $: totalFiltrado = filtrados.reduce((acc, a) => acc + a.valor_total, 0)
   $: totalLitros = filtrados.reduce((acc, a) => acc + a.litros, 0)
 
@@ -96,6 +113,12 @@
     </div>
   </div>
 
+  <div class="periodo-tabs">
+    {#each [['', 'Todos'], ['7', '7 dias'], ['30', '30 dias'], ['90', '3 meses'], ['365', '1 ano']] as [val, label]}
+      <button class="periodo-btn" class:ativo={filtroPeriodo === val} on:click={() => filtroPeriodo = val}>{label}</button>
+    {/each}
+  </div>
+
   <!-- Consumo médio por veículo -->
   {#if veiculos.length > 0}
     <div class="consumos-grid">
@@ -128,7 +151,7 @@
     </div>
 
     <div class="abast-lista card">
-      {#each filtrados as a, i}
+      {#each filtradosPagina as a, i}
         <div class="abast-row">
           <div class="comb-badge" style="background:{corCombustivel(a.combustivel)}22;color:{corCombustivel(a.combustivel)}">
             <span class="comb-icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14V4a1 1 0 011-1h5a1 1 0 011 1v10M3 14h7M10 6h2a1 1 0 011 1v4a1 1 0 001 1"/><path d="M13 7l1.5-1.5"/></svg>'}</span>
@@ -150,9 +173,17 @@
             <button class="btn btn-ghost" style="padding:6px 8px;color:var(--red)" on:click={() => deletar(a.id)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
           </div>
         </div>
-        {#if i < filtrados.length - 1}<div class="row-divider" />{/if}
+        {#if i < filtradosPagina.length - 1}<div class="row-divider" />{/if}
       {/each}
     </div>
+
+    {#if totalPaginas > 1}
+      <div class="paginacao">
+        <button class="btn btn-ghost" disabled={pagina === 0} on:click={() => pagina--}>← Anterior</button>
+        <span class="pagina-info">{pagina + 1} / {totalPaginas}</span>
+        <button class="btn btn-ghost" disabled={pagina >= totalPaginas - 1} on:click={() => pagina++}>Próximo →</button>
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -287,6 +318,27 @@
     border-radius: var(--radius-sm); padding: 10px 14px;
     font-size: 13px; color: var(--text-2); margin-bottom: 14px;
   }
+
+  .periodo-tabs {
+    display: flex; gap: 4px; margin-bottom: 16px;
+  }
+
+  .periodo-btn {
+    padding: 5px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--bg-card);
+    color: var(--text-3); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.12s; font-family: var(--font);
+  }
+
+  .periodo-btn:hover { border-color: var(--border-2); color: var(--text-2); }
+  .periodo-btn.ativo { border-color: var(--accent-3); background: var(--accent); color: var(--accent-fg); }
+
+  .paginacao {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-top: 12px; padding: 8px;
+  }
+
+  .pagina-info { font-size: 12px; color: var(--text-3); font-family: var(--font-mono); min-width: 48px; text-align: center; }
 
   .mono { font-family: var(--font-mono); }
 </style>

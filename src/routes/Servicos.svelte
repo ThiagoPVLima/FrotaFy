@@ -21,6 +21,8 @@
 
   let mostrarOleo = false
   let mostrarPecas = false
+  let pagina = 0
+  const POR_PAGINA = 20
 
   function novaPeca() { return { nome: '', marca: '', quantidade: '1', valor_unitario: '' } }
 
@@ -38,6 +40,10 @@
   $: servicosFiltrados = filtroVeiculo
     ? servicos.filter(s => String(s.veiculo_id) === filtroVeiculo)
     : servicos
+
+  $: { filtroVeiculo; pagina = 0 }
+  $: totalPaginas = Math.ceil(servicosFiltrados.length / POR_PAGINA)
+  $: servicosPagina = servicosFiltrados.slice(pagina * POR_PAGINA, (pagina + 1) * POR_PAGINA)
 
   $: tipoSelecionado = tipos.find(t => String(t.id) === String(form.tipo_servico_id))
   $: isOleo = tipoSelecionado?.nome?.toLowerCase().includes('óleo') || tipoSelecionado?.nome?.toLowerCase().includes('oleo')
@@ -138,7 +144,7 @@
       </div>
     {/if}
     <div class="servicos-lista card">
-      {#each servicosFiltrados as s, i}
+      {#each servicosPagina as s, i}
         <div class="servico-row">
           <div class="tipo-icon" style="background:{s.tipo_cor || '#1a6aff'}22;color:{s.tipo_cor || '#1a6aff'}">{(s.tipo_nome || s.tipo_servico_custom || 'S').charAt(0).toUpperCase()}</div>
           <div class="servico-info">
@@ -165,9 +171,17 @@
             <button class="btn btn-ghost" style="padding:6px 8px;color:var(--red)" on:click={() => deletar(s.id)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}</span></button>
           </div>
         </div>
-        {#if i < servicosFiltrados.length - 1}<div class="row-divider" />{/if}
+        {#if i < servicosPagina.length - 1}<div class="row-divider" />{/if}
       {/each}
     </div>
+
+    {#if totalPaginas > 1}
+      <div class="paginacao">
+        <button class="btn btn-ghost" disabled={pagina === 0} on:click={() => pagina--}>← Anterior</button>
+        <span class="pagina-info">{pagina + 1} / {totalPaginas}</span>
+        <button class="btn btn-ghost" disabled={pagina >= totalPaginas - 1} on:click={() => pagina++}>Próximo →</button>
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -345,6 +359,13 @@
   .peca-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
 
   .pecas-total { font-size: 12px; color: var(--text-2); text-align: right; margin-top: 8px; }
+
+  .paginacao {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-top: 12px; padding: 8px;
+  }
+
+  .pagina-info { font-size: 12px; color: var(--text-3); font-family: var(--font-mono); min-width: 48px; text-align: center; }
 
   .mono { font-family: var(--font-mono); }
 
