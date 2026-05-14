@@ -90,7 +90,7 @@
     <div style="display:flex;gap:8px;align-items:center">
       <select class="input" style="width:auto" bind:value={filtroVeiculo}>
         <option value="">Todos os veículos</option>
-        {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+        {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
       </select>
       <button class="btn btn-primary" on:click={() => abrirModal()}>+ Abastecer</button>
     </div>
@@ -166,7 +166,7 @@
         <label class="label">Veículo</label>
         <select class="input" bind:value={form.veiculo_id}>
           <option value="">Selecionar...</option>
-          {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+          {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
         </select>
       </div>
 

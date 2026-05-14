@@ -77,7 +77,7 @@
           <div class="alertas-lista">
             {#each [...data.alertasCriticos, ...data.alertasEmAtencao] as a}
               <div class="alerta-item">
-                <span class="alerta-emoji">{a.tipo_icone}</span>
+                <span class="alerta-emoji">{(a.tipo_nome || '?').charAt(0).toUpperCase()}</span>
                 <div class="alerta-info">
                   <div class="alerta-nome">{a.veiculo_apelido}</div>
                   <div class="alerta-tipo">{a.tipo_nome}</div>
@@ -163,7 +163,7 @@
         <div class="servicos-lista">
           {#each data.ultimosServicos as s, i}
             <div class="servico-row">
-              <div class="servico-icon" style="background:{s.tipo_cor}22; color:{s.tipo_cor}">{s.tipo_icone || '🔧'}</div>
+              <div class="servico-icon" style="background:{s.tipo_cor}22; color:{s.tipo_cor}">{(s.tipo_nome || s.tipo_servico_custom || 'S').charAt(0).toUpperCase()}</div>
               <div class="servico-info">
                 <div class="servico-tipo">{s.tipo_nome || s.tipo_servico_custom || 'Serviço'}</div>
                 <div class="servico-meta">{s.veiculo_apelido} · {formatKm(s.km_no_momento)} · {diasAtras(s.data)}</div>
@@ -228,7 +228,7 @@
   }
 
   .alerta-item:hover { background: var(--bg-hover); }
-  .alerta-emoji { font-size: 18px; flex-shrink: 0; }
+  .alerta-emoji { font-size: 13px; font-weight: 700; font-family: var(--font-display); flex-shrink: 0; }
   .alerta-info { flex: 1; min-width: 0; }
   .alerta-nome { font-size: 13px; font-weight: 500; color: var(--text); }
   .alerta-tipo { font-size: 11px; color: var(--text-3); }
@@ -282,7 +282,7 @@
   .servico-icon {
     width: 34px; height: 34px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
+    font-size: 13px; font-weight: 700; font-family: var(--font-display); flex-shrink: 0;
   }
 
   .servico-info { flex: 1; min-width: 0; }

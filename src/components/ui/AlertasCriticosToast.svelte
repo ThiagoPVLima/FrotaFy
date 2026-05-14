@@ -27,7 +27,7 @@
       <div class="alerta-lista">
         {#each criticos.slice(0, 4) as a}
           <div class="alerta-row">
-            <span class="alerta-icone">{a.tipo_icone}</span>
+            <span class="alerta-icone">{(a.tipo_nome || '?').charAt(0).toUpperCase()}</span>
             <span class="alerta-nome">{a.veiculo_apelido}</span>
             <span class="alerta-tipo">{a.tipo_nome}</span>
           </div>

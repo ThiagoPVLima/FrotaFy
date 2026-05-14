@@ -112,7 +112,7 @@
   <div style="display:flex;gap:8px;margin-bottom:20px">
     <select class="input" style="max-width:220px" bind:value={filtroVeiculo}>
       <option value="">Todos os veículos</option>
-      {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+      {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
     </select>
   </div>
 
@@ -125,7 +125,7 @@
       {#each alertasFiltrados as a}
         <div class="alerta-card card" class:vencido={a.status === 'vencido'} class:atencao={a.status === 'atencao'}>
           <div class="alerta-header">
-            <span class="alerta-emoji">{a.tipo_icone}</span>
+            <span class="alerta-emoji">{(a.tipo_nome || '?').charAt(0).toUpperCase()}</span>
             <div class="alerta-titles">
               <div class="alerta-tipo">{a.tipo_nome}</div>
               <div class="alerta-veiculo">{a.veiculo_apelido}</div>
@@ -194,7 +194,7 @@
         <label class="label">Veículo</label>
         <select class="input" bind:value={form.veiculo_id}>
           <option value="">Selecionar...</option>
-          {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+          {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
         </select>
       </div>
 
@@ -202,7 +202,7 @@
         <label class="label">Tipo de serviço</label>
         <select class="input" bind:value={form.tipo_servico_id}>
           <option value="">Selecionar...</option>
-          {#each tipos as t}<option value={String(t.id)}>{t.icone} {t.nome}</option>{/each}
+          {#each tipos as t}<option value={String(t.id)}>{t.nome}</option>{/each}
         </select>
       </div>
 
@@ -262,7 +262,7 @@
   .alerta-card.atencao { border-color: rgba(245,158,11,.3); }
 
   .alerta-header { display: flex; align-items: center; gap: 10px; }
-  .alerta-emoji { font-size: 22px; flex-shrink: 0; }
+  .alerta-emoji { font-size: 13px; font-weight: 700; font-family: var(--font-display); width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--bg-hover); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .alerta-titles { flex: 1; min-width: 0; }
   .alerta-tipo { font-size: 13px; font-weight: 600; color: var(--text); }
   .alerta-veiculo { font-size: 11px; color: var(--text-3); margin-top: 1px; }

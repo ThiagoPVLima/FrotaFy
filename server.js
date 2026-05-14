@@ -3,8 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { spawn } from 'child_process';
-import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
-import os from 'os';
+import { writeFileSync, readFileSync, existsSync, unlinkSync } from 'fs';
 import { google } from 'googleapis';
 import { Readable } from 'stream';
 
@@ -24,7 +23,7 @@ function localDate() {
 const BACKUP_CFG        = path.join(__dirname, 'backup-config.json');
 const GOOGLE_TOKEN_PATH = path.join(__dirname, 'google-token.json');
 const GOOGLE_CRED_PATH  = path.join(__dirname, 'credentials.json');
-let backupCfg = { pastaBackup: '', intervaloHoras: 6, ultimoBackup: null, ultimoBackupDrive: null };
+let backupCfg = { intervaloHoras: 6, ultimoBackupDrive: null };
 try {
   if (existsSync(BACKUP_CFG))
     backupCfg = { ...backupCfg, ...JSON.parse(readFileSync(BACKUP_CFG, 'utf8')) };
@@ -32,39 +31,6 @@ try {
 
 function salvarBackupCfg() {
   writeFileSync(BACKUP_CFG, JSON.stringify(backupCfg, null, 2));
-}
-
-function detectarPastasCloud() {
-  const home = os.homedir();
-  const candidatos = [
-    { nome: 'Google Drive', pasta: path.join(home, 'Google Drive') },
-    { nome: 'Google Drive', pasta: path.join(home, 'My Drive') },
-    { nome: 'OneDrive',     pasta: path.join(home, 'OneDrive') },
-    { nome: 'OneDrive',     pasta: path.join(home, 'OneDrive - Personal') },
-    { nome: 'Dropbox',      pasta: path.join(home, 'Dropbox') },
-  ];
-  for (const l of 'GHIJKLMNOP')
-    candidatos.push({ nome: 'Google Drive', pasta: `${l}:\\My Drive` });
-  const vistos = new Set();
-  return candidatos.filter(c => {
-    if (vistos.has(c.pasta) || !existsSync(c.pasta)) return false;
-    vistos.add(c.pasta);
-    return true;
-  }).map(c => ({ nome: c.nome, pastaBackup: path.join(c.pasta, 'FrotaFy-Backup') }));
-}
-
-async function fazerBackup(pasta) {
-  mkdirSync(pasta, { recursive: true });
-  const database = await db.getDb();
-  const data = database.export();
-  writeFileSync(path.join(pasta, `frotafy-backup-${localDate()}.db`), Buffer.from(data));
-  const arquivos = readdirSync(pasta)
-    .filter(f => f.startsWith('frotafy-backup-') && f.endsWith('.db'))
-    .sort();
-  while (arquivos.length > 7)
-    try { unlinkSync(path.join(pasta, arquivos.shift())); } catch {}
-  backupCfg.ultimoBackup = new Date().toISOString();
-  salvarBackupCfg();
 }
 
 // ─── GOOGLE DRIVE ─────────────────────────────────────────────────────────────
@@ -140,22 +106,14 @@ let _driveBackupStatus = { running: false, erro: null };
 let _backupTimer = null;
 function iniciarBackupAutomatico() {
   if (_backupTimer) clearInterval(_backupTimer);
-  const temLocal = backupCfg.pastaBackup && backupCfg.intervaloHoras;
-  const temDrive = existsSync(GOOGLE_TOKEN_PATH) && backupCfg.intervaloHoras;
-  if (!temLocal && !temDrive) return;
-  const ms = (backupCfg.intervaloHoras || 6) * 60 * 60 * 1000;
+  if (!existsSync(GOOGLE_TOKEN_PATH) || !backupCfg.intervaloHoras) return;
+  const ms = backupCfg.intervaloHoras * 60 * 60 * 1000;
   _backupTimer = setInterval(async () => {
-    if (backupCfg.pastaBackup) {
-      try { await fazerBackup(backupCfg.pastaBackup); console.log('[backup] local ok'); }
-      catch (e) { console.error('[backup] local erro:', e.message); }
-    }
-    if (getAuthedClient()) {
-      try { await fazerBackupDrive(); console.log('[backup] drive ok'); }
-      catch (e) { console.error('[backup] drive erro:', e.message); }
-    }
+    if (!getAuthedClient()) return;
+    try { await fazerBackupDrive(); console.log('[backup] drive ok'); }
+    catch (e) { console.error('[backup] drive erro:', e.message); }
   }, ms);
-  const fontes = [temLocal && 'local', temDrive && 'drive'].filter(Boolean).join(' + ');
-  console.log(`[backup] automático a cada ${backupCfg.intervaloHoras}h (${fontes})`);
+  console.log(`[backup] automático a cada ${backupCfg.intervaloHoras}h (google drive)`);
 }
 iniciarBackupAutomatico();
 
@@ -398,40 +356,6 @@ app.get('/api/exportar', route(async (req, res) => {
 }));
 
 // ─── BACKUP ───────────────────────────────────────────────────────────────────
-app.get('/api/backup/config', route(async (req, res) => {
-  res.json({ config: backupCfg, pastasDetectadas: detectarPastasCloud() });
-}));
-
-app.post('/api/backup/config', route(async (req, res) => {
-  const { pastaBackup, intervaloHoras } = req.body;
-  backupCfg.pastaBackup = pastaBackup || '';
-  backupCfg.intervaloHoras = parseInt(intervaloHoras) || 6;
-  salvarBackupCfg();
-  iniciarBackupAutomatico();
-  res.json({ ok: true });
-}));
-
-app.post('/api/backup/agora', route(async (req, res) => {
-  if (!backupCfg.pastaBackup) return res.json({ ok: false, error: 'Nenhuma pasta configurada' });
-  await fazerBackup(backupCfg.pastaBackup);
-  res.json({ ok: true, ultimoBackup: backupCfg.ultimoBackup });
-}));
-
-app.get('/api/backup/escolher-pasta', (req, res) => {
-  const ps = spawn('powershell', [
-    '-NoProfile', '-NonInteractive', '-Command',
-    `Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.FolderBrowserDialog; $f.Description = 'Selecione a pasta de backup do Car Manager'; if ($f.ShowDialog() -eq 'OK') { Write-Output $f.SelectedPath }`
-  ]);
-  let out = '';
-  ps.stdout.on('data', d => { out += d.toString(); });
-  ps.on('close', () => {
-    const pasta = out.trim();
-    if (pasta) res.json({ ok: true, pasta: path.join(pasta, 'FrotaFy-Backup') });
-    else res.json({ ok: false });
-  });
-  ps.on('error', () => res.json({ ok: false }));
-});
-
 app.get('/api/backup', route(async (req, res) => {
   const database = await db.getDb();
   const data = database.export();
@@ -482,6 +406,17 @@ app.get('/api/google-drive/status', route(async (req, res) => {
   } catch {
     res.json({ conectado: false });
   }
+}));
+
+app.get('/api/google-drive/config', (req, res) => {
+  res.json({ intervaloHoras: backupCfg.intervaloHoras || 6 });
+});
+
+app.post('/api/google-drive/config', route(async (req, res) => {
+  backupCfg.intervaloHoras = parseInt(req.body.intervaloHoras) || 6;
+  salvarBackupCfg();
+  iniciarBackupAutomatico();
+  res.json({ ok: true });
 }));
 
 app.delete('/api/google-drive/desconectar', route(async (req, res) => {

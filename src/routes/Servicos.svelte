@@ -116,7 +116,7 @@
     <div style="display:flex;gap:8px;align-items:center">
       <select class="input" style="width:auto" bind:value={filtroVeiculo}>
         <option value="">Todos os veículos</option>
-        {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+        {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
       </select>
       <button class="btn btn-primary" on:click={() => abrirModal()}>+ Novo serviço</button>
     </div>
@@ -140,7 +140,7 @@
     <div class="servicos-lista card">
       {#each servicosFiltrados as s, i}
         <div class="servico-row">
-          <div class="tipo-icon" style="background:{s.tipo_cor || '#1a6aff'}22;color:{s.tipo_cor || '#1a6aff'}">{s.tipo_icone || '🔧'}</div>
+          <div class="tipo-icon" style="background:{s.tipo_cor || '#1a6aff'}22;color:{s.tipo_cor || '#1a6aff'}">{(s.tipo_nome || s.tipo_servico_custom || 'S').charAt(0).toUpperCase()}</div>
           <div class="servico-info">
             <div class="servico-titulo">{s.tipo_nome || s.tipo_servico_custom || 'Serviço livre'}</div>
             <div class="servico-meta">
@@ -181,7 +181,7 @@
         <label class="label">Veículo</label>
         <select class="input" bind:value={form.veiculo_id}>
           <option value="">Selecionar...</option>
-          {#each veiculos as v}<option value={String(v.id)}>{v.apelido} — {v.marca} {v.modelo}</option>{/each}
+          {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''} — {v.marca} {v.modelo}</option>{/each}
         </select>
       </div>
 
@@ -189,7 +189,7 @@
         <label class="label">Tipo de serviço</label>
         <select class="input" bind:value={form.tipo_servico_id} on:change={() => { if (form.tipo_servico_id) form.tipo_servico_custom = ''; mostrarOleo = isOleo }}>
           <option value="">Selecionar ou descrever abaixo...</option>
-          {#each tipos as t}<option value={String(t.id)}>{t.icone} {t.nome}</option>{/each}
+          {#each tipos as t}<option value={String(t.id)}>{t.nome}</option>{/each}
         </select>
         {#if !form.tipo_servico_id}
           <input class="input" style="margin-top:6px" placeholder="Descreva o serviço..." bind:value={form.tipo_servico_custom} />
@@ -301,7 +301,7 @@
   .tipo-icon {
     width: 36px; height: 36px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 17px; flex-shrink: 0;
+    font-size: 13px; font-weight: 700; font-family: var(--font-display); flex-shrink: 0;
   }
 
   .servico-info { flex: 1; min-width: 0; }

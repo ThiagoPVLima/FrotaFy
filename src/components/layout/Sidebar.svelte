@@ -60,13 +60,7 @@
 
 <aside class="sidebar">
   <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M6 4h11M6 12h7M6 4v16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M11 16l6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/>
-        <circle cx="17" cy="12" r="1.5" fill="currentColor"/>
-      </svg>
-    </div>
+    <img src="/FrotaFyLogo.png" alt="FrotaFy" class="brand-logo" />
     <div class="brand-text">
       <div class="brand-name">FrotaFy</div>
       <div class="brand-sub">Manutenção automotiva</div>
@@ -138,15 +132,9 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .brand-icon {
-    width: 36px; height: 36px; border-radius: 8px;
-    background: var(--accent);
-    border: 1px solid var(--accent-2);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent-fg); flex-shrink: 0;
+  .brand-logo {
+    height: 36px; width: auto; object-fit: contain; flex-shrink: 0;
   }
-
-  .brand-icon svg { width: 18px; height: 18px; }
 
   .brand-name {
     font-size: 14px; font-weight: 700; color: var(--text);

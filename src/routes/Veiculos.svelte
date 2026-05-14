@@ -23,8 +23,19 @@
 
   onMount(load)
 
-  $: ativos   = veiculos.filter(v => v.ativo)
+  let busca = ''
+
+  $: todos    = veiculos.filter(v => v.ativo)
   $: inativos = veiculos.filter(v => !v.ativo)
+  $: ativos   = busca.trim()
+    ? todos.filter(v => {
+        const q = busca.trim().toLowerCase()
+        return (v.placa || '').toLowerCase().includes(q)
+          || (v.apelido || '').toLowerCase().includes(q)
+          || (v.modelo || '').toLowerCase().includes(q)
+          || (v.marca || '').toLowerCase().includes(q)
+      })
+    : todos
 
   function abrirModal(v?: any) {
     editando = v || null
@@ -92,7 +103,7 @@
     return 'var(--green)'
   }
 
-  const marcas = ['Chevrolet', 'Fiat', 'Ford', 'Honda', 'Hyundai', 'Jeep', 'Nissan', 'Peugeot', 'Renault', 'Toyota', 'Volkswagen', 'Volvo', 'BMW', 'Mercedes-Benz', 'Audi', 'Outro']
+  const marcas = ['Chevrolet', 'Fiat', 'Ford', 'Honda', 'Hyundai', 'Iveco', 'Jeep', 'Kia', 'Nissan', 'Peugeot', 'Renault', 'Toyota', 'Volkswagen', 'Volvo', 'BMW', 'Mercedes-Benz', 'Audi', 'Outro']
 </script>
 
 <div class="page">
@@ -104,13 +115,26 @@
     <button class="btn btn-primary" on:click={() => abrirModal()}>+ Novo veículo</button>
   </div>
 
+  <div class="busca-wrap">
+    <svg viewBox="0 0 16 16" class="busca-icon"><circle cx="6.5" cy="6.5" r="4"/><path d="M11 11l2.5 2.5"/></svg>
+    <input class="input busca-input" placeholder="Buscar por placa, apelido, marca ou modelo..." bind:value={busca} />
+    {#if busca}<button class="busca-clear" on:click={() => busca = ''}>
+      {@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>'}
+    </button>{/if}
+  </div>
+
   {#if loading}
     <div class="loading">Carregando...</div>
-  {:else if ativos.length === 0 && !loading}
+  {:else if ativos.length === 0 && !loading && !busca}
     <div class="empty-state">
       <div class="icon">{@html '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M3 17h18M4.5 17L6 10.5h12l1.5 6.5"/><circle cx="7" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/><path d="M8.5 10.5L9.5 7h5l1 3.5"/></svg>'}</div>
       <p>Nenhum veículo cadastrado ainda</p>
       <button class="btn btn-primary" style="margin-top:16px" on:click={() => abrirModal()}>Cadastrar primeiro veículo</button>
+    </div>
+  {:else if ativos.length === 0 && busca}
+    <div class="empty-state">
+      <div class="icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><circle cx="6.5" cy="6.5" r="4"/><path d="M11 11l2.5 2.5"/></svg>'}</div>
+      <p>Nenhum veículo encontrado para "<strong>{busca}</strong>"</p>
     </div>
   {:else}
     <div class="veiculos-grid">
@@ -207,7 +231,7 @@
         <div class="detalhe-section-title">Alertas ativos</div>
         {#each alertasDetalhe.filter(a => a.veiculo_id === veiculoDetalhe.id && (a.status === 'vencido' || a.status === 'atencao')) as a}
           <div class="alerta-mini">
-            <span>{a.tipo_icone}</span>
+            <span class="mini-letra">{(a.tipo_nome || '?').charAt(0).toUpperCase()}</span>
             <span class="alerta-mini-nome">{a.tipo_nome}</span>
             <span class="badge status-{a.status}" style="margin-left:auto">{a.status === 'vencido' ? 'Vencido' : 'Atenção'}</span>
           </div>
@@ -218,7 +242,7 @@
         <div class="detalhe-section-title">Últimos serviços</div>
         {#each servicosDetalhe as s}
           <div class="servico-mini">
-            <span class="s-icon">{s.tipo_icone || '🔧'}</span>
+            <span class="s-icon">{(s.tipo_nome || s.tipo_servico_custom || 'S').charAt(0).toUpperCase()}</span>
             <div class="s-info">
               <span>{s.tipo_nome || s.tipo_servico_custom}</span>
               <span class="s-meta">{formatKm(s.km_no_momento)} · {diasAtras(s.data)}</span>
@@ -337,6 +361,28 @@
 {/if}
 
 <style>
+  .busca-wrap {
+    position: relative; display: flex; align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .busca-icon {
+    position: absolute; left: 10px; width: 14px; height: 14px;
+    fill: none; stroke: var(--text-3); stroke-width: 1.5; stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .busca-input { padding-left: 32px; }
+
+  .busca-clear {
+    position: absolute; right: 8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--bg-hover); border: none; cursor: pointer;
+    color: var(--text-3); display: flex; align-items: center; justify-content: center;
+  }
+
+  .busca-clear :global(svg) { width: 10px; height: 10px; }
+
   .veiculos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -447,7 +493,8 @@
     padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
   }
 
-  .s-icon { font-size: 16px; }
+  .s-icon { font-size: 12px; font-weight: 700; font-family: var(--font-display); }
+  .mini-letra { font-size: 12px; font-weight: 700; font-family: var(--font-display); }
   .s-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
   .s-meta { font-size: 11px; color: var(--text-3); }
 

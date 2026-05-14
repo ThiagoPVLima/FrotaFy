@@ -69,7 +69,7 @@
     </div>
     <select class="input" style="width:auto" bind:value={filtroVeiculo} on:change={load}>
       <option value="">Todos os veículos</option>
-      {#each veiculos as v}<option value={String(v.id)}>{v.apelido}</option>{/each}
+      {#each veiculos as v}<option value={String(v.id)}>{v.apelido}{v.placa ? ' · ' + v.placa : ''}</option>{/each}
     </select>
   </div>
 
@@ -119,7 +119,7 @@
           <div class="tipos-lista">
             {#each dados.porTipo as t}
               <div class="tipo-row">
-                <span class="tipo-icone">{t.icone || '🔧'}</span>
+                <span class="tipo-icone">{(t.categoria || '?').charAt(0).toUpperCase()}</span>
                 <div class="tipo-info">
                   <div class="tipo-nome">{t.categoria || 'Sem categoria'}</div>
                   <div class="progress-wrap" style="margin-top:4px">

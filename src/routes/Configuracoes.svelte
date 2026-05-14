@@ -3,30 +3,20 @@
   import { get, post, put, del, showToast, showConfirm } from '../lib/stores/app'
 
   let tipos: any[] = []
-  let cfgBackup: any = { pastaBackup: '', intervaloHoras: 6 }
-  let pastasCloud: any[] = []
-  let salvandoBackup = false
-  let ultimoBackup: string | null = null
-  let fazendoBackup = false
-  // Google Drive
   let gdriveStatus: any = {}
   let gdriveBackupando = false
   let gdriveDesconectando = false
+  let intervaloHoras = 6
+  let salvandoIntervalo = false
 
   let modalTipo = false
   let editandoTipo: any = null
   let formTipo = { nome: '', icone: '🔧', cor: '#6b7280' }
 
-  const icones = ['🔧', '🛢️', '💨', '⛽', '🌬️', '🎯', '⚖️', '🔄', '🔍', '🛑', '🔩', '💧', '⚡', '⚙️', '🔗', '🏎️', '🔋', '❄️', '🛞', '📋', '🔌', '🪛', '🔑', '⚠️']
-
   async function load() {
-    const [t, b] = await Promise.all([get('/tipos-servico'), get('/backup/config')])
+    const [t, cfg] = await Promise.all([get('/tipos-servico'), get('/google-drive/config')])
     tipos = t || []
-    if (b) {
-      cfgBackup = { pastaBackup: b.config?.pastaBackup || '', intervaloHoras: b.config?.intervaloHoras || 6 }
-      ultimoBackup = b.config?.ultimoBackup || null
-      pastasCloud = b.pastasDetectadas || []
-    }
+    if (cfg) intervaloHoras = cfg.intervaloHoras || 6
   }
 
   async function loadDrive() {
@@ -61,26 +51,11 @@
 
   onMount(() => { load(); loadDrive() })
 
-  async function salvarBackup() {
-    salvandoBackup = true
-    await post('/backup/config', cfgBackup)
-    showToast('Configurações de backup salvas!')
-    salvandoBackup = false
-  }
-
-  async function escolherPasta() {
-    const r = await get('/backup/escolher-pasta')
-    if (r?.ok && r.pasta) cfgBackup = { ...cfgBackup, pastaBackup: r.pasta }
-  }
-
-  async function fazerBackupAgora() {
-    if (!cfgBackup.pastaBackup) { showToast('Configure uma pasta de backup primeiro', 'error'); return }
-    fazendoBackup = true
-    const r = await post('/backup/agora', {})
-    if (r?.ok) showToast('Backup realizado com sucesso!')
-    else showToast(r?.error || 'Erro ao fazer backup', 'error')
-    fazendoBackup = false
-    load()
+  async function salvarIntervalo() {
+    salvandoIntervalo = true
+    await post('/google-drive/config', { intervaloHoras })
+    showToast('Frequência de backup salva!')
+    salvandoIntervalo = false
   }
 
   async function baixarDb() {
@@ -89,7 +64,7 @@
 
   function abrirModalTipo(t?: any) {
     editandoTipo = t || null
-    formTipo = t ? { nome: t.nome, icone: t.icone || '🔧', cor: t.cor || '#6b7280' } : { nome: '', icone: '🔧', cor: '#6b7280' }
+    formTipo = t ? { nome: t.nome, cor: t.cor || '#6b7280' } : { nome: '', cor: '#6b7280' }
     modalTipo = true
   }
 
@@ -129,62 +104,10 @@
   <!-- Backup -->
   <div class="card secao">
     <h2 class="secao-titulo">
-      <svg viewBox="0 0 16 16" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round"><path d="M3 9.5V13a1 1 0 001 1h8a1 1 0 001-1V9.5"/><path d="M8 2v7M5 6l3 3 3-3"/></svg>
-      Backup automático
-    </h2>
-    <p class="secao-desc">Salva automaticamente o banco de dados na pasta configurada.</p>
-
-    {#if pastasCloud.length > 0}
-      <div class="cloud-sugestoes">
-        <div class="sugestao-label">Pastas detectadas:</div>
-        {#each pastasCloud as p}
-          <button class="sugestao-btn" on:click={() => cfgBackup = { ...cfgBackup, pastaBackup: p.pastaBackup }}>
-            <span class="cloud-icon">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11a3 3 0 0 1-.5-6 4 4 0 0 1 8 0 2.5 2.5 0 0 1 .5 5H3.5z"/></svg>'}</span> {p.nome} — {p.pastaBackup}
-          </button>
-        {/each}
-      </div>
-    {/if}
-
-    <div class="backup-form">
-      <div class="form-group">
-        <label class="label">Pasta de backup</label>
-        <div style="display:flex;gap:8px">
-          <input class="input" placeholder="Caminho da pasta..." bind:value={cfgBackup.pastaBackup} />
-          <button class="btn btn-secondary" on:click={escolherPasta} style="white-space:nowrap">Escolher pasta</button>
-        </div>
-      </div>
-      <div class="form-group" style="max-width:200px">
-        <label class="label">Frequência (horas)</label>
-        <select class="input" bind:value={cfgBackup.intervaloHoras}>
-          {#each [1,2,4,6,12,24] as h}<option value={h}>{h}h</option>{/each}
-        </select>
-      </div>
-    </div>
-
-    <div class="backup-acoes">
-      <button class="btn btn-primary" on:click={salvarBackup} disabled={salvandoBackup}>
-        {salvandoBackup ? 'Salvando...' : 'Salvar configuração'}
-      </button>
-      <button class="btn btn-secondary" on:click={fazerBackupAgora} disabled={fazendoBackup}>
-        {#if fazendoBackup}Fazendo backup...{:else}<span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg>'}</span> Fazer backup agora{/if}
-      </button>
-      <button class="btn btn-secondary" on:click={baixarDb}>
-        <span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>'}</span> Baixar banco (.db)
-      </button>
-    </div>
-
-    {#if ultimoBackup}
-      <div class="ultimo-backup">Último backup: {formatData(ultimoBackup)}</div>
-    {/if}
-  </div>
-
-  <!-- Google Drive -->
-  <div class="card secao" style="margin-top:16px">
-    <h2 class="secao-titulo">
       <svg viewBox="0 0 16 16" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round"><path d="M6 2L2 9h4l2 5 2-5h4L10 2H6z"/></svg>
-      Backup Google Drive
+      Backup automático — Google Drive
     </h2>
-    <p class="secao-desc">Salva automaticamente o banco de dados no Google Drive.</p>
+    <p class="secao-desc">O banco de dados é enviado automaticamente para o Google Drive no intervalo configurado.</p>
 
     {#if gdriveStatus.semCredentials}
       <div class="gdrive-sem-cred">
@@ -224,6 +147,27 @@
         </button>
       </div>
     {/if}
+
+    <div class="divider"></div>
+
+    <div class="backup-frequencia">
+      <div style="flex:1;max-width:200px">
+        <div class="label">Frequência do backup</div>
+        <select class="input" bind:value={intervaloHoras}>
+          {#each [1,2,4,6,12,24] as h}<option value={h}>{h}h</option>{/each}
+        </select>
+      </div>
+      <button class="btn btn-primary" on:click={salvarIntervalo} disabled={salvandoIntervalo} style="align-self:flex-end">
+        {salvandoIntervalo ? 'Salvando...' : 'Salvar frequência'}
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="btn btn-secondary" on:click={baixarDb}>
+      <span class="btn-icon-wrap">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>'}</span>
+      Baixar banco de dados (.db)
+    </button>
   </div>
 
   <!-- Tipos de serviço -->
@@ -239,7 +183,7 @@
     <div class="tipos-grid">
       {#each tipos as t}
         <div class="tipo-item">
-          <div class="tipo-icon" style="background:{t.cor}22;color:{t.cor}">{t.icone}</div>
+          <div class="tipo-icon" style="background:{t.cor}22;color:{t.cor}">{t.nome.charAt(0).toUpperCase()}</div>
           <div class="tipo-nome">{t.nome}</div>
           <div class="tipo-acoes">
             <button class="btn btn-ghost" style="padding:4px 8px" on:click={() => abrirModalTipo(t)}><span class="btn-svg">{@html '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5l1 1-8.5 8.5-2 .5.5-2 8.5-8.5z"/><path d="M11 4l1 1"/></svg>'}</span></button>
@@ -276,17 +220,6 @@
       </div>
 
       <div class="form-group">
-        <label class="label">Ícone</label>
-        <div class="icones-grid">
-          {#each icones as ic}
-            <button class="icone-btn" class:selected={formTipo.icone === ic} on:click={() => formTipo.icone = ic}>
-              {ic}
-            </button>
-          {/each}
-        </div>
-      </div>
-
-      <div class="form-group">
         <label class="label">Cor</label>
         <div class="cores-row">
           {#each ['#f59e0b','#3b82f6','#6366f1','#8b5cf6','#10b981','#14b8a6','#6b7280','#1a6aff','#ef4444','#f97316','#64748b','#16a34a'] as cor}
@@ -297,9 +230,9 @@
         </div>
       </div>
 
-      {#if formTipo.nome || formTipo.icone}
+      {#if formTipo.nome}
         <div class="preview-tipo">
-          <div class="tipo-icon-preview" style="background:{formTipo.cor}22;color:{formTipo.cor}">{formTipo.icone}</div>
+          <div class="tipo-icon-preview" style="background:{formTipo.cor}22;color:{formTipo.cor}">{formTipo.nome.charAt(0).toUpperCase()}</div>
           <span style="font-size:13px;font-weight:500">{formTipo.nome || 'Novo tipo'}</span>
         </div>
       {/if}
@@ -322,24 +255,7 @@
 
   .secao-desc { font-size: 12px; color: var(--text-3); margin-bottom: 20px; }
 
-  .cloud-sugestoes { margin-bottom: 16px; }
-
-  .sugestao-label { font-size: 10px; color: var(--text-3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
-
-  .sugestao-btn {
-    display: flex; align-items: center; gap: 6px; width: 100%;
-    background: var(--bg-2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 8px 12px;
-    font-size: 12px; color: var(--text-2); cursor: pointer;
-    margin-bottom: 4px; transition: all 0.1s; font-family: var(--font);
-    text-align: left;
-  }
-
-  .sugestao-btn:hover { border-color: var(--accent-3); color: var(--accent-fg); background: var(--accent); }
-
-  .backup-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
-
-  .backup-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .backup-frequencia { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 
   .ultimo-backup { font-size: 11px; color: var(--text-3); margin-top: 12px; font-family: var(--font-mono); flex: 1; padding-bottom: 8px; }
 
@@ -383,17 +299,6 @@
   }
 
   /* Modal tipo */
-  .icones-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-
-  .icone-btn {
-    width: 34px; height: 34px; font-size: 18px; border-radius: var(--radius-sm);
-    background: var(--bg-2); border: 1px solid var(--border);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.1s;
-  }
-
-  .icone-btn:hover { border-color: var(--border-2); transform: scale(1.1); }
-  .icone-btn.selected { border-color: var(--accent-3); background: var(--accent); }
 
   .cores-row { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -416,9 +321,6 @@
   .tipo-icon-preview { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
   .mono { font-family: var(--font-mono); }
-
-  .cloud-icon { display: inline-flex; align-items: center; width: 14px; height: 14px; }
-  .cloud-icon :global(svg) { width: 14px; height: 14px; }
 
   .btn-icon-wrap { display: inline-flex; align-items: center; width: 14px; height: 14px; }
   .btn-icon-wrap :global(svg) { width: 14px; height: 14px; }
